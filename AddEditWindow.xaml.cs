@@ -1,0 +1,121 @@
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using InventoryPlus.Models;
+using InventoryPlus.Services;
+using Microsoft.Win32;
+
+namespace InventoryPlus;
+
+public partial class AddEditWindow : Window
+{
+    private readonly InventoryItem _item;
+    private string? _pendingImageSource; // path chosen but not yet saved
+
+    public InventoryItem? Result { get; private set; }
+
+    // ── Constructors ──────────────────────────────────────────────────────────
+
+    public AddEditWindow() : this(null) { }
+
+    public AddEditWindow(InventoryItem? existing)
+    {
+        InitializeComponent();
+
+        _item = existing is not null
+            ? new InventoryItem
+              {
+                  Id          = existing.Id,
+                  Name        = existing.Name,
+                  Quantity    = existing.Quantity,
+                  Category    = existing.Category,
+                  Description = existing.Description,
+                  ImageFile   = existing.ImageFile
+              }
+            : new InventoryItem();
+
+        if (existing is not null)
+        {
+            DialogTitle.Text  = "Edit Item";
+            NameBox.Text      = existing.Name;
+            QtyBox.Text       = existing.Quantity.ToString();
+            CategoryBox.Text  = existing.Category;
+            DescBox.Text      = existing.Description;
+
+            var imgPath = InventoryService.GetImagePath(existing.ImageFile);
+            if (!string.IsNullOrEmpty(imgPath) && File.Exists(imgPath))
+                LoadPreview(imgPath);
+        }
+    }
+
+    // ── Image picker ──────────────────────────────────────────────────────────
+
+    private void PickImage_Click(object sender, MouseButtonEventArgs e)
+    {
+        var dlg = new OpenFileDialog
+        {
+            Title  = "Select an image",
+            Filter = "JPEG images|*.jpg;*.jpeg"
+        };
+
+        if (dlg.ShowDialog() != true) return;
+
+        _pendingImageSource = dlg.FileName;
+        LoadPreview(dlg.FileName);
+    }
+
+    private void LoadPreview(string path)
+    {
+        var bmp = new BitmapImage();
+        bmp.BeginInit();
+        bmp.UriSource   = new Uri(path, UriKind.Absolute);
+        bmp.CacheOption = BitmapCacheOption.OnLoad;
+        bmp.EndInit();
+
+        PreviewImage.Source       = bmp;
+        ImagePlaceholder.Visibility = Visibility.Collapsed;
+    }
+
+    // ── Validation helpers ────────────────────────────────────────────────────
+
+    private void QtyBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        => e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
+
+    // ── Save / Cancel ─────────────────────────────────────────────────────────
+
+    private void Save_Click(object sender, RoutedEventArgs e)
+    {
+        var name = NameBox.Text.Trim();
+        if (string.IsNullOrEmpty(name))
+        {
+            MessageBox.Show("Name is required.", "Validation", MessageBoxButton.OK, MessageBoxImage.Warning);
+            NameBox.Focus();
+            return;
+        }
+
+        if (!int.TryParse(QtyBox.Text, out var qty) || qty < 0)
+        {
+            MessageBox.Show("Quantity must be a non-negative number.", "Validation",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+            QtyBox.Focus();
+            return;
+        }
+
+        _item.Name        = name;
+        _item.Quantity    = qty;
+        _item.Category    = CategoryBox.Text.Trim();
+        _item.Description = DescBox.Text.Trim();
+
+        // Copy new image into the data folder
+        if (_pendingImageSource is not null)
+            _item.ImageFile = InventoryService.ImportImage(_pendingImageSource, _item.Id);
+
+        Result       = _item;
+        DialogResult = true;
+    }
+
+    private void Cancel_Click(object sender, RoutedEventArgs e)
+        => DialogResult = false;
+}

@@ -1,0 +1,5 @@
+C:\Users\PC\Documents\GitHub\inventory+\bin\Release\net8.0-windows\publish\InventoryPlus.exe
+C:\Users\PC\Documents\GitHub\inventory+\bin\Release\net8.0-windows\publish\InventoryPlus.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Release\net8.0-windows\publish\InventoryPlus.deps.json
+C:\Users\PC\Documents\GitHub\inventory+\bin\Release\net8.0-windows\publish\InventoryPlus.runtimeconfig.json
+C:\Users\PC\Documents\GitHub\inventory+\bin\Release\net8.0-windows\publish\InventoryPlus.pdb
