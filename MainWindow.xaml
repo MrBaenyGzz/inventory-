@@ -70,6 +70,46 @@
                 <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
+
+                    <!-- Stock stepper — adjusts the selected item's quantity -->
+                    <Border x:Name="StockStepper"
+                            Height="34"
+                            Margin="0,0,12,0"
+                            VerticalAlignment="Center"
+                            Background="{StaticResource SurfaceBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="DecreaseBtn"
+                                    Style="{StaticResource StepperButton}"
+                                    Content="&#x2212;"
+                                    IsEnabled="False"
+                                    ToolTip="Remove from the selected item's stock"
+                                    Click="DecreaseStock_Click"/>
+                            <Border Width="1" Background="{StaticResource BorderBrush}"/>
+                            <TextBox x:Name="StockAmountBox"
+                                     Text="1"
+                                     Width="44"
+                                     MaxLength="4"
+                                     BorderThickness="0"
+                                     Background="Transparent"
+                                     FontSize="13"
+                                     TextAlignment="Center"
+                                     VerticalContentAlignment="Center"
+                                     Foreground="{StaticResource TextPrimaryBrush}"
+                                     ToolTip="Amount to add or remove (1–9999)"
+                                     PreviewTextInput="StockAmountBox_PreviewTextInput"/>
+                            <Border Width="1" Background="{StaticResource BorderBrush}"/>
+                            <Button x:Name="IncreaseBtn"
+                                    Style="{StaticResource StepperButton}"
+                                    Content="+"
+                                    IsEnabled="False"
+                                    ToolTip="Add to the selected item's stock"
+                                    Click="IncreaseStock_Click"/>
+                        </StackPanel>
+                    </Border>
+
                     <Button Style="{StaticResource AccentButton}"
                             Content="+ Add Item"
                             Click="AddItem_Click"/>

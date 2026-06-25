@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using InventoryPlus.Models;
 using InventoryPlus.Services;
@@ -62,6 +64,7 @@ public partial class MainWindow : Window
     {
         EmptyDetail.Visibility = Visibility.Collapsed;
         ItemDetail.Visibility  = Visibility.Visible;
+        SetStepperEnabled(true);
 
         DetailName.Text     = item.Name;
         DetailCategory.Text = item.Category;
@@ -89,6 +92,70 @@ public partial class MainWindow : Window
         EmptyDetail.Visibility = Visibility.Visible;
         ItemDetail.Visibility  = Visibility.Collapsed;
         ItemList.SelectedItem  = null;
+        SetStepperEnabled(false);
+    }
+
+    // ── Stock stepper ───────────────────────────────────────────────────────────
+
+    private void SetStepperEnabled(bool enabled)
+    {
+        // Guard: called from ClearDetail during construction, before controls exist.
+        if (IncreaseBtn is null || DecreaseBtn is null) return;
+        IncreaseBtn.IsEnabled = enabled;
+        DecreaseBtn.IsEnabled = enabled;
+    }
+
+    private void StockAmountBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        => e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
+
+    private bool TryGetStepAmount(out int amount)
+    {
+        amount = 0;
+        if (int.TryParse(StockAmountBox.Text, out var n) && n is >= 1 and <= 9999)
+        {
+            amount = n;
+            return true;
+        }
+
+        MessageBox.Show("Enter an amount between 1 and 9999.", "Invalid amount",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+        StockAmountBox.Focus();
+        StockAmountBox.SelectAll();
+        return false;
+    }
+
+    private void IncreaseStock_Click(object sender, RoutedEventArgs e)
+    {
+        if (ItemList.SelectedItem is not InventoryItem item) return;
+        if (!TryGetStepAmount(out var amount)) return;
+
+        item.Quantity += amount;
+        PersistStockChange(item);
+    }
+
+    private void DecreaseStock_Click(object sender, RoutedEventArgs e)
+    {
+        if (ItemList.SelectedItem is not InventoryItem item) return;
+        if (!TryGetStepAmount(out var amount)) return;
+
+        if (amount > item.Quantity)
+        {
+            MessageBox.Show(
+                $"Can't remove {amount}. \"{item.Name}\" only has {item.Quantity} in stock.",
+                "Not enough stock", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        item.Quantity -= amount;
+        PersistStockChange(item);
+    }
+
+    /// <summary>Saves to disk and refreshes the list row + detail panel in place.</summary>
+    private void PersistStockChange(InventoryItem item)
+    {
+        InventoryService.SaveAll(_allItems);
+        ItemList.Items.Refresh();
+        DetailQty.Text = item.Quantity.ToString();
     }
 
     // ── CRUD ──────────────────────────────────────────────────────────────────
