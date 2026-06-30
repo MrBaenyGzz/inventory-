@@ -2,11 +2,48 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Item"
-        Width="420" Height="520"
+        Width="420" Height="620"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BackgroundBrush}"
         FontFamily="Segoe UI">
+
+    <Window.Resources>
+        <!-- Thin, modern scrollbar (applies to scrollbars inside this window) -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageUpCommand"
+                                                  Opacity="0" Focusable="False"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="ScrollBar.PageDownCommand"
+                                                  Opacity="0" Focusable="False"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="#C7CBD1"
+                                                        CornerRadius="4"
+                                                        Margin="2,0"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
 
     <Grid Margin="24">
         <Grid.RowDefinitions>
@@ -24,8 +61,11 @@
                    Foreground="{StaticResource TextPrimaryBrush}"
                    Margin="0,0,0,20"/>
 
-        <!-- Form -->
-        <StackPanel Grid.Row="1">
+        <!-- Form (scrollable as a safety net so content never gets clipped) -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      Padding="0,0,4,0">
+        <StackPanel>
 
             <!-- Image picker -->
             <StackPanel Margin="0,0,0,14">
@@ -74,7 +114,7 @@
             </StackPanel>
 
             <!-- Description -->
-            <StackPanel>
+            <StackPanel Margin="0,0,0,16">
                 <TextBlock Text="Description" Style="{StaticResource FieldLabel}"/>
                 <TextBox x:Name="DescBox"
                          Style="{StaticResource ModernTextBox}"
@@ -84,6 +124,7 @@
                          VerticalScrollBarVisibility="Auto"/>
             </StackPanel>
         </StackPanel>
+        </ScrollViewer>
 
         <!-- Footer Buttons -->
         <StackPanel Grid.Row="2"
