@@ -47,11 +47,13 @@ public partial class MainWindow : Window
 
     // ── Search ────────────────────────────────────────────────────────────────
 
+    // UI source: SearchBox
     private void SearchBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         => ApplyFilter(SearchBox.Text);
 
     // ── Detail Panel ──────────────────────────────────────────────────────────
 
+    // UI source: ItemList
     private void ItemList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
         if (ItemList.SelectedItem is InventoryItem item)
@@ -105,6 +107,7 @@ public partial class MainWindow : Window
         DecreaseBtn.IsEnabled = enabled;
     }
 
+    // UI source: StockAmountBox
     private void StockAmountBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         => e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
 
@@ -124,6 +127,7 @@ public partial class MainWindow : Window
         return false;
     }
 
+    // UI source: IncreaseBtn
     private void IncreaseStock_Click(object sender, RoutedEventArgs e)
     {
         if (ItemList.SelectedItem is not InventoryItem item) return;
@@ -133,6 +137,7 @@ public partial class MainWindow : Window
         PersistStockChange(item);
     }
 
+    // UI source: DecreaseBtn
     private void DecreaseStock_Click(object sender, RoutedEventArgs e)
     {
         if (ItemList.SelectedItem is not InventoryItem item) return;
@@ -160,6 +165,7 @@ public partial class MainWindow : Window
 
     // ── CRUD ──────────────────────────────────────────────────────────────────
 
+    // UI source: AddItemButton
     private void AddItem_Click(object sender, RoutedEventArgs e)
     {
         var dlg = new AddEditWindow();
@@ -170,6 +176,7 @@ public partial class MainWindow : Window
         }
     }
 
+    // UI source: EditItemButton
     private void EditItem_Click(object sender, RoutedEventArgs e)
     {
         if (ItemList.SelectedItem is not InventoryItem selected) return;
@@ -182,6 +189,7 @@ public partial class MainWindow : Window
         }
     }
 
+    // UI source: DeleteItemButton
     private void DeleteItem_Click(object sender, RoutedEventArgs e)
     {
         if (ItemList.SelectedItem is not InventoryItem selected) return;

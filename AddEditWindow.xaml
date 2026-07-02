@@ -1,8 +1,9 @@
 <Window x:Class="InventoryPlus.AddEditWindow"
+    x:Name="AddEditItemWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Item"
-        Width="420" Height="520"
+        Width="420" Height="570"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BackgroundBrush}"
@@ -24,8 +25,13 @@
                    Foreground="{StaticResource TextPrimaryBrush}"
                    Margin="0,0,0,20"/>
 
-        <!-- Form -->
-        <StackPanel Grid.Row="1">
+        <!-- Form: scrollable with mouse wheel + right-side scrollbar -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      CanContentScroll="False"
+                      PanningMode="VerticalOnly">
+            <StackPanel>
 
             <!-- Image picker -->
             <StackPanel Margin="0,0,0,14">
@@ -35,7 +41,7 @@
                         HorizontalAlignment="Left"
                         Background="{StaticResource SurfaceBrush}"
                         BorderBrush="{StaticResource BorderBrush}"
-                        BorderThickness="1"
+                        BorderThickness="3"
                         CornerRadius="8"
                         ClipToBounds="True"
                         Cursor="Hand"
@@ -52,13 +58,13 @@
                 </Border>
             </StackPanel>
 
-            <!-- Name -->
+            <!-- Name input (required) - TextBox ID: NameBox -->
             <StackPanel Margin="0,0,0,14">
                 <TextBlock Text="Name *" Style="{StaticResource FieldLabel}"/>
                 <TextBox x:Name="NameBox" Style="{StaticResource ModernTextBox}"/>
             </StackPanel>
 
-            <!-- Quantity -->
+            <!-- Quantity input (required) - TextBox ID: QtyBox -->
             <StackPanel Margin="0,0,0,14">
                 <TextBlock Text="Quantity *" Style="{StaticResource FieldLabel}"/>
                 <TextBox x:Name="QtyBox"
@@ -67,13 +73,13 @@
                          PreviewTextInput="QtyBox_PreviewTextInput"/>
             </StackPanel>
 
-            <!-- Category -->
+            <!-- Category input (optional) - TextBox ID: CategoryBox -->
             <StackPanel Margin="0,0,0,14">
                 <TextBlock Text="Category" Style="{StaticResource FieldLabel}"/>
                 <TextBox x:Name="CategoryBox" Style="{StaticResource ModernTextBox}"/>
             </StackPanel>
 
-            <!-- Description -->
+            <!-- Description input (optional, multiline) - TextBox ID: DescBox -->
             <StackPanel>
                 <TextBlock Text="Description" Style="{StaticResource FieldLabel}"/>
                 <TextBox x:Name="DescBox"
@@ -83,19 +89,24 @@
                          AcceptsReturn="True"
                          VerticalScrollBarVisibility="Auto"/>
             </StackPanel>
-        </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
 
         <!-- Footer Buttons -->
         <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="0,20,0,0">
-            <Button Style="{StaticResource GhostButton}"
+                <!-- Button ID: CancelButton -->
+                <Button x:Name="CancelButton"
+                    Style="{StaticResource GhostButton}"
                     Content="Cancel"
                     Margin="0,0,10,0"
                     IsCancel="True"
                     Click="Cancel_Click"/>
-            <Button Style="{StaticResource AccentButton}"
+                <!-- Button ID: SaveButton -->
+                <Button x:Name="SaveButton"
+                    Style="{StaticResource AccentButton}"
                     Content="Save"
                     IsDefault="True"
                     Click="Save_Click"/>

@@ -1,4 +1,5 @@
 <Window x:Class="InventoryPlus.MainWindow"
+    x:Name="MainInventoryWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Inventory+"
@@ -34,12 +35,12 @@
                            Foreground="{StaticResource AccentBrush}"
                            VerticalAlignment="Center"/>
 
-                <!-- Search -->
+                <!-- Search area: SearchBox drives live filtering in MainWindow.xaml.cs -->
                 <Border Grid.Column="1"
                         Margin="24,0"
                         Background="{StaticResource BackgroundBrush}"
                         BorderBrush="{StaticResource BorderBrush}"
-                        BorderThickness="1"
+                        BorderThickness="4"
                         CornerRadius="6"
                         VerticalAlignment="Center"
                         MaxWidth="340">
@@ -54,6 +55,7 @@
                                    Margin="10,0,4,0"
                                    VerticalAlignment="Center"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
+                        <!-- TextBox ID: SearchBox -->
                         <TextBox  Grid.Column="1"
                                   x:Name="SearchBox"
                                   BorderThickness="0"
@@ -88,6 +90,7 @@
                                     ToolTip="Remove from the selected item's stock"
                                     Click="DecreaseStock_Click"/>
                             <Border Width="1" Background="{StaticResource BorderBrush}"/>
+                            <!-- TextBox ID: StockAmountBox (amount used by +/- stock buttons) -->
                             <TextBox x:Name="StockAmountBox"
                                      Text="1"
                                      Width="44"
@@ -110,7 +113,9 @@
                         </StackPanel>
                     </Border>
 
-                    <Button Style="{StaticResource AccentButton}"
+                        <!-- Button ID: AddItemButton -->
+                        <Button x:Name="AddItemButton"
+                            Style="{StaticResource AccentButton}"
                             Content="+ Add Item"
                             Click="AddItem_Click"/>
                 </StackPanel>
@@ -320,11 +325,15 @@
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
                                     Margin="0,16,0,0">
-                            <Button Style="{StaticResource GhostButton}"
+                                <!-- Button ID: EditItemButton -->
+                                <Button x:Name="EditItemButton"
+                                    Style="{StaticResource GhostButton}"
                                     Content="Edit"
                                     Margin="0,0,8,0"
                                     Click="EditItem_Click"/>
-                            <Button Style="{StaticResource DangerButton}"
+                                <!-- Button ID: DeleteItemButton -->
+                                <Button x:Name="DeleteItemButton"
+                                    Style="{StaticResource DangerButton}"
                                     Content="Delete"
                                     Click="DeleteItem_Click"/>
                         </StackPanel>

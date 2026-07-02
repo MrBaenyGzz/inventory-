@@ -52,6 +52,7 @@ public partial class AddEditWindow : Window
 
     // ── Image picker ──────────────────────────────────────────────────────────
 
+    // UI source: ImageBorder (opens picker) and updates PreviewImage/ImagePlaceholder
     private void PickImage_Click(object sender, MouseButtonEventArgs e)
     {
         var dlg = new OpenFileDialog
@@ -80,11 +81,13 @@ public partial class AddEditWindow : Window
 
     // ── Validation helpers ────────────────────────────────────────────────────
 
+    // UI source: QtyBox
     private void QtyBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         => e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
 
     // ── Save / Cancel ─────────────────────────────────────────────────────────
 
+    // UI source: SaveButton
     private void Save_Click(object sender, RoutedEventArgs e)
     {
         var name = NameBox.Text.Trim();
@@ -116,6 +119,7 @@ public partial class AddEditWindow : Window
         DialogResult = true;
     }
 
+    // UI source: CancelButton
     private void Cancel_Click(object sender, RoutedEventArgs e)
         => DialogResult = false;
 }
