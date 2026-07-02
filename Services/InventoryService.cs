@@ -1,4 +1,6 @@
 using System.IO;
+using System.Globalization;
+using ClosedXML.Excel;
 using InventoryPlus.Models;
 
 namespace InventoryPlus.Services;
@@ -6,7 +8,7 @@ namespace InventoryPlus.Services;
 /// <summary>
 /// Reads and writes inventory data to a pipe-delimited plain-text file.
 /// Format (one item per line):
-///   Id|Name|Quantity|Category|Description|ImageFile
+///   Id|Name|BoughtPrice|SellingPrice|Quantity|Category|Description|ImageFile
 /// Images are stored as .jpg files under Data/Images/.
 /// </summary>
 public static class InventoryService
@@ -39,10 +41,32 @@ public static class InventoryService
             var parts = line.Split(Sep);
             if (parts.Length < 6) continue;
 
+            // Backward compatibility:
+            // Old format (6 fields): Id|Name|Quantity|Category|Description|ImageFile
+            // New format (8 fields): Id|Name|BoughtPrice|SellingPrice|Quantity|Category|Description|ImageFile
+            if (parts.Length >= 8)
+            {
+                items.Add(new InventoryItem
+                {
+                    Id           = parts[0],
+                    Name         = Unescape(parts[1]),
+                    BoughtPrice  = ParseDecimal(parts[2]),
+                    SellingPrice = ParseDecimal(parts[3]),
+                    Quantity     = int.TryParse(parts[4], out var q2) ? q2 : 0,
+                    Category     = Unescape(parts[5]),
+                    Description  = Unescape(parts[6]),
+                    ImageFile    = parts[7]
+                });
+
+                continue;
+            }
+
             items.Add(new InventoryItem
             {
                 Id          = parts[0],
                 Name        = Unescape(parts[1]),
+                BoughtPrice  = 0m,
+                SellingPrice = 0m,
                 Quantity    = int.TryParse(parts[2], out var q) ? q : 0,
                 Category    = Unescape(parts[3]),
                 Description = Unescape(parts[4]),
@@ -61,6 +85,8 @@ public static class InventoryService
             string.Join(Sep,
                 i.Id,
                 Escape(i.Name),
+                i.BoughtPrice.ToString(CultureInfo.InvariantCulture),
+                i.SellingPrice.ToString(CultureInfo.InvariantCulture),
                 i.Quantity,
                 Escape(i.Category),
                 Escape(i.Description),
@@ -112,7 +138,67 @@ public static class InventoryService
     public static string GetImagePath(string imageFile)
         => string.IsNullOrEmpty(imageFile) ? string.Empty : Path.Combine(ImagesDir, imageFile);
 
+    // ── Export ───────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Exports all inventory items to an Excel workbook (.xlsx).
+    /// Images are intentionally excluded; one column is created per item data field.
+    /// </summary>
+    public static void ExportToExcel(IEnumerable<InventoryItem> items, string filePath)
+    {
+        using var workbook = new XLWorkbook();
+        var sheet = workbook.Worksheets.Add("Inventario");
+
+        // Header row
+        sheet.Cell(1, 1).Value = "BoughtPrice";
+        sheet.Cell(1, 2).Value = "SellingPrice";
+        sheet.Cell(1, 3).Value = "Name";
+        sheet.Cell(1, 4).Value = "Quantity";
+        sheet.Cell(1, 5).Value = "Category";
+        sheet.Cell(1, 6).Value = "Description";
+
+        var row = 2;
+        foreach (var item in items)
+        {
+            sheet.Cell(row, 1).Value = item.BoughtPrice;
+            sheet.Cell(row, 2).Value = item.SellingPrice;
+            sheet.Cell(row, 3).Value = item.Name;
+            sheet.Cell(row, 4).Value = item.Quantity;
+            sheet.Cell(row, 5).Value = item.Category;
+            sheet.Cell(row, 6).Value = item.Description;
+            row++;
+        }
+
+        var usedRange = sheet.RangeUsed();
+        if (usedRange is not null)
+        {
+            usedRange.SetAutoFilter();
+            var header = sheet.Row(1);
+            header.Style.Font.Bold = true;
+            header.Style.Fill.BackgroundColor = XLColor.LightGray;
+        }
+
+        sheet.Columns().AdjustToContents();
+
+        var outDir = Path.GetDirectoryName(filePath);
+        if (!string.IsNullOrWhiteSpace(outDir))
+            Directory.CreateDirectory(outDir);
+
+        workbook.SaveAs(filePath);
+    }
+
     // ── Escaping ─────────────────────────────────────────────────────────────
+
+    private static decimal ParseDecimal(string input)
+    {
+        if (decimal.TryParse(input, NumberStyles.Number, CultureInfo.InvariantCulture, out var value))
+            return value;
+
+        if (decimal.TryParse(input, NumberStyles.Number, CultureInfo.CurrentCulture, out value))
+            return value;
+
+        return 0m;
+    }
 
     private static string Escape(string value)   => value.Replace("\\", "\\\\").Replace("|", "\\p").Replace("\n", "\\n");
     private static string Unescape(string value) => value.Replace("\\n", "\n").Replace("\\p", "|").Replace("\\\\", "\\");

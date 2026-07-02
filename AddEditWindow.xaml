@@ -64,6 +64,24 @@
                 <TextBox x:Name="NameBox" Style="{StaticResource ModernTextBox}"/>
             </StackPanel>
 
+            <!-- Bought price input (required) - TextBox ID: BoughtPriceBox -->
+            <StackPanel Margin="0,0,0,14">
+                <TextBlock Text="Bought Price *" Style="{StaticResource FieldLabel}"/>
+                <TextBox x:Name="BoughtPriceBox"
+                         Style="{StaticResource ModernTextBox}"
+                         Text="0"
+                         PreviewTextInput="PriceBox_PreviewTextInput"/>
+            </StackPanel>
+
+            <!-- Selling price input (required) - TextBox ID: SellingPriceBox -->
+            <StackPanel Margin="0,0,0,14">
+                <TextBlock Text="Selling Price *" Style="{StaticResource FieldLabel}"/>
+                <TextBox x:Name="SellingPriceBox"
+                         Style="{StaticResource ModernTextBox}"
+                         Text="0"
+                         PreviewTextInput="PriceBox_PreviewTextInput"/>
+            </StackPanel>
+
             <!-- Quantity input (required) - TextBox ID: QtyBox -->
             <StackPanel Margin="0,0,0,14">
                 <TextBlock Text="Quantity *" Style="{StaticResource FieldLabel}"/>

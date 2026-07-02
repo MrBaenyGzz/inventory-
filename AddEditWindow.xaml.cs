@@ -1,4 +1,5 @@
 using System.IO;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
@@ -29,6 +30,8 @@ public partial class AddEditWindow : Window
               {
                   Id          = existing.Id,
                   Name        = existing.Name,
+                  BoughtPrice = existing.BoughtPrice,
+                  SellingPrice = existing.SellingPrice,
                   Quantity    = existing.Quantity,
                   Category    = existing.Category,
                   Description = existing.Description,
@@ -40,6 +43,8 @@ public partial class AddEditWindow : Window
         {
             DialogTitle.Text  = "Edit Item";
             NameBox.Text      = existing.Name;
+            BoughtPriceBox.Text = existing.BoughtPrice.ToString("0.##", CultureInfo.CurrentCulture);
+            SellingPriceBox.Text = existing.SellingPrice.ToString("0.##", CultureInfo.CurrentCulture);
             QtyBox.Text       = existing.Quantity.ToString();
             CategoryBox.Text  = existing.Category;
             DescBox.Text      = existing.Description;
@@ -85,6 +90,10 @@ public partial class AddEditWindow : Window
     private void QtyBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         => e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
 
+    // UI source: BoughtPriceBox / SellingPriceBox
+    private void PriceBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        => e.Handled = !Regex.IsMatch(e.Text, @"^[\d.,]+$");
+
     // ── Save / Cancel ─────────────────────────────────────────────────────────
 
     // UI source: SaveButton
@@ -106,7 +115,27 @@ public partial class AddEditWindow : Window
             return;
         }
 
+        if (!TryParseMoney(BoughtPriceBox.Text, out var boughtPrice) || boughtPrice < 0)
+        {
+            MessageBox.Show("Bought price must be a non-negative number.", "Validation",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+            BoughtPriceBox.Focus();
+            BoughtPriceBox.SelectAll();
+            return;
+        }
+
+        if (!TryParseMoney(SellingPriceBox.Text, out var sellingPrice) || sellingPrice < 0)
+        {
+            MessageBox.Show("Selling price must be a non-negative number.", "Validation",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
+            SellingPriceBox.Focus();
+            SellingPriceBox.SelectAll();
+            return;
+        }
+
         _item.Name        = name;
+        _item.BoughtPrice = boughtPrice;
+        _item.SellingPrice = sellingPrice;
         _item.Quantity    = qty;
         _item.Category    = CategoryBox.Text.Trim();
         _item.Description = DescBox.Text.Trim();
@@ -122,4 +151,14 @@ public partial class AddEditWindow : Window
     // UI source: CancelButton
     private void Cancel_Click(object sender, RoutedEventArgs e)
         => DialogResult = false;
+
+    private static bool TryParseMoney(string value, out decimal parsed)
+    {
+        var normalized = value.Trim();
+
+        if (decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.CurrentCulture, out parsed))
+            return true;
+
+        return decimal.TryParse(normalized, NumberStyles.Number, CultureInfo.InvariantCulture, out parsed);
+    }
 }

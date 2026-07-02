@@ -21,3 +21,13 @@ C:\Users\PC\Documents\GitHub\inventory+\obj\Debug\net8.0-windows\refint\Inventor
 C:\Users\PC\Documents\GitHub\inventory+\obj\Debug\net8.0-windows\InventoryPlus.pdb
 C:\Users\PC\Documents\GitHub\inventory+\obj\Debug\net8.0-windows\InventoryPlus.genruntimeconfig.cache
 C:\Users\PC\Documents\GitHub\inventory+\obj\Debug\net8.0-windows\ref\InventoryPlus.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Debug\net8.0-windows\ClosedXML.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Debug\net8.0-windows\ClosedXML.Parser.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Debug\net8.0-windows\DocumentFormat.OpenXml.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Debug\net8.0-windows\DocumentFormat.OpenXml.Framework.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Debug\net8.0-windows\ExcelNumberFormat.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Debug\net8.0-windows\RBush.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Debug\net8.0-windows\SixLabors.Fonts.dll
+C:\Users\PC\Documents\GitHub\inventory+\bin\Debug\net8.0-windows\System.IO.Packaging.dll
+C:\Users\PC\Documents\GitHub\inventory+\obj\Debug\net8.0-windows\InventoryPlus.csproj.AssemblyReference.cache
+C:\Users\PC\Documents\GitHub\inventory+\obj\Debug\net8.0-windows\Inventor.C898A00D.Up2Date
